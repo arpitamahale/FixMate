@@ -7,6 +7,9 @@ body {
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1500&q=80');
     background-size: cover;
     background-position: center;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
 }
 
 .service-card {
@@ -30,13 +33,32 @@ body {
     letter-spacing: 1px;
 }
 
-.btn-primary {
-    background-color: #007bff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+.card {
+    border-radius: 15px;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.badge {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.list-group-item {
+    border-radius: 10px !important;
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+}
+
+.table thead th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: #6c757d;
 }

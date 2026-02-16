@@ -1,105 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - FixMate</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">FixMate</a>
-            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 text-center p-4">
-                    <img src="https://ui-avatars.com/api/?name=User&size=128&background=random" class="rounded-circle mx-auto mb-3" alt="Profile Picture" style="width: 120px;">
-                    <h3 class="fw-bold">{{ session.get('user_name', 'Jayan') }}</h3>
-                    <p class="text-muted"><i class="fas fa-phone me-2"></i>+91 1234567890</p>
-                    <hr>
-                    <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#requestModal">Request New Service</button>
-                </div>
+{% block title %}User Profile - FixMate{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center p-4">
+                <img src="https://ui-avatars.com/api/?name={{ session.get('user_name') }}&size=128&background=random" class="rounded-circle mx-auto mb-3" alt="Profile Picture" style="width: 120px;">
+                <h3 class="fw-bold">{{ session.get('user_name', 'User') }}</h3>
+                <p class="text-muted">Welcome to your dashboard</p>
+                <hr>
+                <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#requestModal">Request New Service</button>
             </div>
-            <div class="col-md-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Service History</h4>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Service</th>
-                                        <th>Date</th>
-                                        <th>Provider</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in history %}
-                                    <tr>
-                                        <td>{{ item.service_type }}</td>
-                                        <td>{{ item.created_at[:10] if item.created_at else 'Today' }}</td>
-                                        <td>{{ item.providers.name if item.providers else 'Searching...' }}</td>
-                                        <td>
-                                            <span class="badge {% if item.status == 'pending' %}bg-warning text-dark{% else %}bg-success{% endif %}">
-                                                {{ item.status.capitalize() }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                    {% if not history %}
-                                    <tr>
-                                        <td colspan="4" class="text-center">No service history found.</td>
-                                    </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-                        </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">Service History</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Provider</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in history %}
+                                <tr>
+                                    <td>{{ item.service_type }}</td>
+                                    <td>{{ item.created_at[:10] if item.created_at else 'Today' }}</td>
+                                    <td>{{ item.providers.name if item.providers else 'Searching...' }}</td>
+                                    <td>
+                                        <span class="badge {% if item.status == 'pending' %}bg-warning text-dark{% elif item.status == 'assigned' %}bg-info{% else %}bg-success{% endif %}">
+                                            {{ item.status.capitalize() }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not history %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No service history found.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="requestModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Request a Service</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="/submit_request" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Service Type</label>
-                            <select name="service" class="form-select" required>
-                                <option value="Cleaning">Cleaning</option>
-                                <option value="Plumbing">Plumbing</option>
-                                <option value="Electrician">Electrician</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Additional Details</label>
-                            <textarea name="details" class="form-control" rows="3" placeholder="Describe your problem..."></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit Request</button>
-                    </div>
-                </form>
+<!-- Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request a Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+            <form action="/submit_request" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Service Type</label>
+                        <select name="service" class="form-select" required>
+                            <option value="Cleaning">Home Cleaning</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="Electrician">Electrician</option>
+                            <option value="Appliance Repair">Appliance Repair</option>
+                            <option value="Painting">Painting</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Additional Details</label>
+                        <textarea name="details" class="form-control" rows="3" placeholder="Describe your problem..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,97 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Provider Profile - FixMate</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">FixMate Provider</a>
-            <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0 text-center p-4">
-                    <img src="https://ui-avatars.com/api/?name=Provider&size=128&background=random" class="rounded-circle mx-auto mb-3" alt="Profile Picture" style="width: 120px;">
-                    <h3 class="fw-bold">{{ session.get('provider_name', 'Professional') }}</h3>
-                    <p class="text-primary fw-bold"><i class="fas fa-tools me-2"></i>Electrician</p>
-                    <p class="text-muted"><i class="fas fa-phone me-2"></i>+91 9876543210</p>
-                    <hr>
-                    <div class="d-flex justify-content-around">
-                        <div>
-                            <h5 class="mb-0">15</h5>
-                            <small class="text-muted">Jobs Done</small>
-                        </div>
-                        <div>
-                            <h5 class="mb-0">4.8</h5>
-                            <small class="text-muted">Rating</small>
-                        </div>
+{% block title %}Provider Profile - FixMate{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center p-4">
+                <img src="https://ui-avatars.com/api/?name={{ session.get('provider_name') }}&size=128&background=random" class="rounded-circle mx-auto mb-3" alt="Profile Picture" style="width: 120px;">
+                <h3 class="fw-bold">{{ session.get('provider_name', 'Professional') }}</h3>
+                <p class="text-primary fw-bold">Provider Dashboard</p>
+                <hr>
+                <div class="d-flex justify-content-around">
+                    <div>
+                        <h5 class="mb-0">Active</h5>
+                        <small class="text-muted">Status</small>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">4.8</h5>
+                        <small class="text-muted">Rating</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4 text-primary">New Requests in Your Area</h4>
-                        <div class="list-group">
-                            {% for req in requests %}
-                            <div class="list-group-item list-group-item-action p-4 border-start border-primary border-4 mb-2">
-                                <div class="d-flex w-100 justify-content-between align-items-center">
-                                    <h5 class="mb-1 fw-bold">{{ req.service_type }}</h5>
-                                    <span class="badge bg-info text-dark">New</span>
-                                </div>
-                                <p class="mb-2 text-muted">Customer: {{ req.users.name }}</p>
-                                <p class="mb-3">"{{ req.details }}"</p>
-                                <form action="/accept_job/{{ req.id }}" method="POST" style="display:inline;">
-                                    <button class="btn btn-success btn-sm px-4">Accept Job</button>
-                                </form>
-                                <button class="btn btn-outline-secondary btn-sm px-4 ms-2">Ignore</button>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 text-primary">New Requests for Your Service</h4>
+                    <div class="list-group">
+                        {% for req in requests %}
+                        <div class="list-group-item list-group-item-action p-4 border-start border-primary border-4 mb-2">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h5 class="mb-1 fw-bold">{{ req.service_type }}</h5>
+                                <span class="badge bg-info text-dark">New</span>
                             </div>
-                            {% endfor %}
-                            {% if not requests %}
-                            <p class="text-center text-muted">No new requests in your area.</p>
-                            {% endif %}
+                            <p class="mb-2 text-muted">Customer: {{ req.users.name if req.users else 'Anonymous' }}</p>
+                            <p class="mb-3">"{{ req.details }}"</p>
+                            <form action="/accept_job/{{ req.id }}" method="POST" style="display:inline;">
+                                <button class="btn btn-success btn-sm px-4">Accept Job</button>
+                            </form>
                         </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <h4 class="fw-bold mb-4">Completed Jobs</h4>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Service</th>
-                                        <th>Customer</th>
-                                        <th>Earnings</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Feb 2, 2026</td>
-                                        <td>Switch Replacement</td>
-                                        <td>Suresh</td>
-                                        <td>₹500</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        {% endfor %}
+                        {% if not requests %}
+                        <p class="text-center text-muted">No new requests in your area.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

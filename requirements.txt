@@ -1,3 +1,5 @@
 flask
-supabase
+flask-sqlalchemy
+psycopg2-binary
 python-dotenv
+werkzeug
